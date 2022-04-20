@@ -1,9 +1,11 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
+import CreateUserController from "./controllers/user/CreateUserController";
+import AuthUserController from "./controllers/user/AuthUserController";
 
 const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
-  throw new Error("Erro de teste");
-});
+router.post("/users", new CreateUserController().handler);
+
+router.post("/session", new AuthUserController().handler);
 
 export { router };
