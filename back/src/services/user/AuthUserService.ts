@@ -1,5 +1,6 @@
 import prismaClient from "../../prisma";
 import { compare } from "bcryptjs";
+import { sign } from "jsonwebtoken";
 
 interface AuthProps {
   email: string;
@@ -22,8 +23,20 @@ class AuthUserService {
       throw new Error("User/Password not found");
     }
 
+    const token = sign(
+      { name: user.name, email: user.email },
+      process.env.JWT_TOKEN,
+      {
+        subject: user.id,
+        expiresIn: "30d",
+      }
+    );
+
     return {
-      user,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      token,
     };
   }
 }
