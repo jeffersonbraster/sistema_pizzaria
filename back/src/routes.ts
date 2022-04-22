@@ -71,7 +71,7 @@ router.get(
   new DetailOrderController().handle
 );
 
-router.get(
+router.put(
   "/order/finish",
   isAuthenticated,
   new FinishOrderController().handle
