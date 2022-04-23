@@ -5,8 +5,24 @@ import Image from "next/image";
 import { Input } from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import Link from "next/link";
+import { FormEvent, useState } from "react";
 
 export default function Signup() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignUp = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (name === "" || email === "" || password === "") {
+      alert("Preencha todos os campos.");
+      return;
+    }
+    setLoading(true);
+  };
+
   return (
     <>
       <Head>
@@ -18,14 +34,29 @@ export default function Signup() {
         <div className={styles.login}>
           <h1>Criando sua conta</h1>
 
-          <form>
-            <Input placeholder="Digite seu nome" type="text" />
+          <form onSubmit={handleSignUp}>
+            <Input
+              placeholder="Digite seu nome"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
 
-            <Input placeholder="Digite seu E-mail" type="text" />
+            <Input
+              placeholder="Digite seu E-mail"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-            <Input placeholder="Digite sua senha" type="password" />
+            <Input
+              placeholder="Digite sua senha"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-            <Button type="submit" loading={true}>
+            <Button type="submit" loading={loading}>
               Cadastrar
             </Button>
           </form>
