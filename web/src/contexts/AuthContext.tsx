@@ -2,6 +2,7 @@ import { createContext, ReactNode, useState } from "react";
 import { destroyCookie, setCookie } from "nookies";
 import Router from "next/router";
 import { api } from "../services/apiClient";
+import { toast } from "react-toastify";
 
 type UserProps = {
   id: string;
@@ -62,21 +63,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       api.defaults.headers["Authorization"] = `Bearer ${token}`;
 
+      toast.success("Bem vindo ao Jejepizza!");
+
       Router.push("/dashboard");
     } catch (error) {
-      alert(`Error ao acessar ${error}`);
+      toast.error("Ocorreu algum erro ao acessar.");
+      console.log("Motivo do error: ", error);
     }
   };
 
   const signUp = async ({ name, email, password }: SignUpProps) => {
     try {
-      const response = await api.post("/users", { name, email, password });
+      await api.post("/users", { name, email, password });
 
-      console.log("sucesso");
+      toast.success("Cadastro realizado com sucesso, faça seu login.");
 
       Router.push("/");
     } catch (error) {
-      alert(`Error ao cadastrar ${error}, procure um administrador.`);
+      toast.error("Ocorreu algum erro ao cadastrar, verifique seus dados.");
+      console.log(`Error ao cadastrar ${error}, procure um administrador.`);
     }
   };
 
