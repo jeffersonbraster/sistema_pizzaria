@@ -14,10 +14,17 @@ type SignInProps = {
   password: string;
 };
 
+type SignUpProps = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 type AuthContextData = {
   user: UserProps;
   isAuthenticated: boolean;
   signIn(credentials: SignInProps): Promise<void>;
+  signUp: (credentials: SignUpProps) => void;
   signOut: () => void;
 };
 
@@ -61,8 +68,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const signUp = async ({ name, email, password }: SignUpProps) => {
+    try {
+      const response = await api.post("/users", { name, email, password });
+
+      console.log("sucesso");
+
+      Router.push("/");
+    } catch (error) {
+      alert(`Error ao cadastrar ${error}, procure um administrador.`);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, signIn, signOut, signUp }}
+    >
       {children}
     </AuthContext.Provider>
   );
