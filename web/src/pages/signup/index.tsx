@@ -8,8 +8,9 @@ import Link from "next/link";
 import { FormEvent, useContext, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
+import { NextPage } from "next";
 
-export default function Signup() {
+const Signup: NextPage = () => {
   const { signUp } = useContext(AuthContext);
 
   const [name, setName] = useState("");
@@ -82,4 +83,6 @@ export default function Signup() {
       </div>
     </>
   );
-}
+};
+
+export default Signup;

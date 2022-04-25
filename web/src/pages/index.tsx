@@ -8,10 +8,10 @@ import Button from "../components/ui/Button";
 import Link from "next/link";
 import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import { canSSRGuest } from "../utils/canSSRGuest";
 
-export default function Home() {
+const Home: NextPage = () => {
   const { signIn } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
@@ -74,7 +74,9 @@ export default function Home() {
       </div>
     </>
   );
-}
+};
+
+export default Home;
 
 export const getServerSideProps: GetServerSideProps = canSSRGuest(
   async (ctx) => {

@@ -1,9 +1,9 @@
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import Header from "../../components/Header";
 import { canSSRAuth } from "../../utils/canSSRAuth";
 
-export default function Dashboard() {
+const Dashboard: NextPage = () => {
   return (
     <>
       <Head>
@@ -14,7 +14,9 @@ export default function Dashboard() {
       </div>
     </>
   );
-}
+};
+
+export default Dashboard;
 
 export const getServerSideProps: GetServerSideProps = canSSRAuth(
   async (ctx) => {
