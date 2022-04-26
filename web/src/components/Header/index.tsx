@@ -1,4 +1,4 @@
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { useContext } from "react";
 import { FiLogOut } from "react-icons/fi";
@@ -12,7 +12,7 @@ const Header = () => {
     <header className={styles.header}>
       <div className={styles.content}>
         <Link href="/dashboard" passHref>
-          <Image
+          <img
             src="/logo.svg"
             alt="logo com o nome jejepizza"
             width={190}

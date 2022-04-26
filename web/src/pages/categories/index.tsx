@@ -1,9 +1,10 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 import Header from "../../components/Header";
 import { setupApiClient } from "../../services/api";
+import { canSSRAuth } from "../../utils/canSSRAuth";
 import styles from "./styles.module.scss";
 
 const Categories: NextPage = () => {
@@ -57,3 +58,11 @@ const Categories: NextPage = () => {
 };
 
 export default Categories;
+
+export const getServerSideProps: GetServerSideProps = canSSRAuth(
+  async (ctx) => {
+    return {
+      props: {},
+    };
+  }
+);
