@@ -6,10 +6,23 @@ import { canSSRAuth } from "../../utils/canSSRAuth";
 import { FiUpload } from "react-icons/fi";
 import styles from "./styles.module.scss";
 import { ChangeEvent, useState } from "react";
+import { setupApiClient } from "../../services/api";
 
-const Product: NextPage = () => {
+type ItemProps = {
+  id: string;
+  name: string;
+};
+
+type CategoryProps = {
+  categoryList: ItemProps[];
+};
+
+const Product: NextPage = ({ categoryList }: CategoryProps) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
+
+  const [categories, setCategories] = useState(categoryList || []);
+  const [categorySelected, setCategorySelected] = useState("");
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
@@ -26,6 +39,10 @@ const Product: NextPage = () => {
       setAvatarFile(image);
       setAvatarUrl(URL.createObjectURL(e.target.files[0]));
     }
+  };
+
+  const handleChangeCategory = (e: ChangeEvent<HTMLSelectElement>) => {
+    setCategorySelected(e.target.value);
   };
 
   return (
@@ -62,8 +79,14 @@ const Product: NextPage = () => {
               )}
             </label>
 
-            <select name="" id="">
-              <option value="">Bebida</option>
+            <select value={categorySelected} onChange={handleChangeCategory}>
+              {categories.map((category, index) => {
+                return (
+                  <option key={category.id} value={index}>
+                    {category.name}
+                  </option>
+                );
+              })}
             </select>
 
             <input
@@ -99,8 +122,14 @@ export default Product;
 
 export const getServerSideProps: GetServerSideProps = canSSRAuth(
   async (ctx) => {
+    const apiClient = setupApiClient(ctx);
+
+    const response = await apiClient.get("/category");
+
     return {
-      props: {},
+      props: {
+        categoryList: response.data,
+      },
     };
   }
 );
