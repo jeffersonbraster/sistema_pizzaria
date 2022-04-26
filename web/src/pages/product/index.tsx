@@ -5,8 +5,9 @@ import Header from "../../components/Header";
 import { canSSRAuth } from "../../utils/canSSRAuth";
 import { FiUpload } from "react-icons/fi";
 import styles from "./styles.module.scss";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { setupApiClient } from "../../services/api";
+import { toast } from "react-toastify";
 
 type ItemProps = {
   id: string;
@@ -18,11 +19,15 @@ type CategoryProps = {
 };
 
 const Product: NextPage = ({ categoryList }: CategoryProps) => {
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+
   const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
 
   const [categories, setCategories] = useState(categoryList || []);
-  const [categorySelected, setCategorySelected] = useState("");
+  const [categorySelected, setCategorySelected] = useState(0);
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
@@ -41,8 +46,49 @@ const Product: NextPage = ({ categoryList }: CategoryProps) => {
     }
   };
 
-  const handleChangeCategory = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeCategory = (e) => {
+    console.log(categories[categorySelected].id);
     setCategorySelected(e.target.value);
+  };
+
+  const handleRegister = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const data = new FormData();
+
+      if (
+        name === "" ||
+        price === "" ||
+        description === "" ||
+        avatarFile === null
+      ) {
+        toast.error("Preencha todos os campos");
+        return;
+      }
+
+      data.append("name", name);
+      data.append("price", price);
+      data.append("description", description);
+      data.append("category_id", categories[categorySelected].id);
+      data.append("file", avatarFile);
+
+      const apiCliente = setupApiClient();
+
+      await apiCliente.post("/product", data);
+
+      toast.success("Produto cadastrado com sucesso.");
+    } catch (err) {
+      console.log(err);
+      toast.error(
+        "Erro ao cadastrar produto, contate o administrador do sistema."
+      );
+    }
+
+    setName("");
+    setPrice("");
+    setDescription("");
+    setAvatarFile(null);
+    setAvatarUrl("");
   };
 
   return (
@@ -57,7 +103,7 @@ const Product: NextPage = ({ categoryList }: CategoryProps) => {
         <main className={styles.container}>
           <h1>Novo produto</h1>
 
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={handleRegister}>
             <label className={styles.labelAvatar}>
               <span>
                 <FiUpload size={25} color="#fff" />
@@ -93,12 +139,16 @@ const Product: NextPage = ({ categoryList }: CategoryProps) => {
               className={styles.input}
               type="text"
               placeholder="Digite o nome do produto"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
 
             <input
               className={styles.input}
               type="text"
               placeholder="Digite o preço do produto"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
             />
 
             <textarea
@@ -106,6 +156,8 @@ const Product: NextPage = ({ categoryList }: CategoryProps) => {
               name=""
               id=""
               placeholder="Descreva seu produto..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             <button className={styles.button} type="submit">
