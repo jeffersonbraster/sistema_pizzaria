@@ -1,11 +1,37 @@
-import { GetServerSideProps, NextPage } from "next";
+import { useState } from "react";
 import Head from "next/head";
+import { GetServerSideProps, NextPage } from "next";
 import Header from "../../components/Header";
 import { FiRefreshCcw } from "react-icons/fi";
 import { canSSRAuth } from "../../utils/canSSRAuth";
-import styles from "./styles.module.scss";
 import { setupApiClient } from "../../services/api";
-import { useState } from "react";
+import Modal from "react-modal";
+import styles from "./styles.module.scss";
+import ModalOrder from "../../components/ModalOrder";
+
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  banner: string;
+};
+
+type Order = {
+  id: string;
+  table: string | number;
+  status: boolean;
+  name: string | null;
+};
+
+export type OrderTypeProps = {
+  id: string;
+  amount: number;
+  order_id: string;
+  product_id: string;
+  product: Product;
+  order: Order;
+};
 
 type OrderItem = {
   id: string;
@@ -22,7 +48,27 @@ type HomeProps = {
 const Dashboard: NextPage = ({ orders }: HomeProps) => {
   const [orderList, setOrderList] = useState(orders || []);
 
-  const handleModalOrder = (id: string) => {};
+  const [modalItem, setModalItem] = useState<OrderTypeProps[]>();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleModalOrder = async (id: string) => {
+    const apiClient = setupApiClient();
+
+    const response = await apiClient.get("/order/detail", {
+      params: {
+        order_id: id,
+      },
+    });
+
+    setModalItem(response.data);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  Modal.setAppElement("#__next");
 
   return (
     <>
@@ -51,6 +97,8 @@ const Dashboard: NextPage = ({ orders }: HomeProps) => {
             ))}
           </article>
         </main>
+
+        {modalVisible && <ModalOrder />}
       </div>
     </>
   );
