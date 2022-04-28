@@ -9,7 +9,7 @@ import Modal from "react-modal";
 import styles from "./styles.module.scss";
 import ModalOrder from "../../components/ModalOrder";
 
-type Product = {
+export type Product = {
   id: string;
   name: string;
   description: string;
@@ -17,7 +17,7 @@ type Product = {
   banner: string;
 };
 
-type Order = {
+export type Order = {
   id: string;
   table: string | number;
   status: boolean;
@@ -98,7 +98,13 @@ const Dashboard: NextPage = ({ orders }: HomeProps) => {
           </article>
         </main>
 
-        {modalVisible && <ModalOrder />}
+        {modalVisible && (
+          <ModalOrder
+            isOpen={modalVisible}
+            onRequestClose={closeModal}
+            order={modalItem}
+          />
+        )}
       </div>
     </>
   );
