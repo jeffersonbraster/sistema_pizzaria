@@ -8,6 +8,7 @@ import { setupApiClient } from "../../services/api";
 import Modal from "react-modal";
 import styles from "./styles.module.scss";
 import ModalOrder from "../../components/ModalOrder";
+import { toast } from "react-toastify";
 
 export type Product = {
   id: string;
@@ -68,6 +69,30 @@ const Dashboard: NextPage = ({ orders }: HomeProps) => {
     setModalVisible(false);
   };
 
+  const handleFinishOrder = async (id: string) => {
+    const apiClient = setupApiClient();
+
+    await apiClient.put("/order/finish", {
+      order_id: id,
+    });
+
+    const response = await apiClient("/orders");
+
+    setOrderList(response.data);
+
+    toast.success("Pedido foi finalizado com sucesso!");
+    setModalVisible(false);
+  };
+
+  const handleRefreshOrders = async () => {
+    const apiClient = setupApiClient();
+
+    const response = await apiClient("/orders");
+
+    toast.success("Pedidos atualizados com sucesso!");
+    setOrderList(response.data);
+  };
+
   Modal.setAppElement("#__next");
 
   return (
@@ -81,11 +106,14 @@ const Dashboard: NextPage = ({ orders }: HomeProps) => {
         <main className={styles.container}>
           <div className={styles.containerHeader}>
             <h1>Últimos pedidos</h1>
-            <button>
+            <button onClick={handleRefreshOrders}>
               <FiRefreshCcw color="#3fffa3" size={25} />
             </button>
           </div>
 
+          {orderList.length === 0 && (
+            <span className={styles.emptyList}>Nenhum pedido em aberto.</span>
+          )}
           <article className={styles.listOrder}>
             {orderList.map((order) => (
               <section key={order.id} className={styles.orderItem}>
@@ -103,6 +131,7 @@ const Dashboard: NextPage = ({ orders }: HomeProps) => {
             isOpen={modalVisible}
             onRequestClose={closeModal}
             order={modalItem}
+            handleFinishOrder={handleFinishOrder}
           />
         )}
       </div>
